@@ -1,37 +1,53 @@
-%% HNUThesis.bst
+%% TJUThesis.bst
 %%
-%% 海南大学学位论文参考文献 BibTeX 样式
-%%
-%%
-%%
-%% 本样式基于 IEEEtran 和 tjuThesis，参考北京大学的.bst文件生成，满足海南大学学位论文格式要求.
+%% 天津大学学位论文参考文献 BibTeX 样式  
+%% 
+%% 项目主页：http://code.google.com/p/buptthesis/
+%% 
+%% 本样式基于 IEEEtran 和 ThuThesis，参考北京邮电大学的.bst文件生成，满足天津大学学位论文格式要求.
 
 %% 感谢作者：
-%% 薛瑞尼（xueruini@gmail.com）
-% BibTeX standard bibliography style `bnubib.bst' derived from `unsrt'
-% This file is part of `bnuthesis' package.
-%
-% $Id: bnubib.bst 178 2009-01-04 13:37:39Z littleleo $
-FUNCTION {is.print.banners.to.terminal} { #1 }
+%% 张煜 (email:dazzlezhang@gmail.com) 
+%%
+%% 更新记录:
+%% $LastChangedBy$
+%% $LastChangedDate$
+%% $LastChangedRevision$
+
+%% 一些设置的缺省值
+% 英文姓名排版格式字符串, 按<last name全称>~<first name首字母><, Jr.>格式
+FUNCTION {default.name.format.string} {"{vv~}{ll}{~f}{, Jj}"}
+
+% 列出的最多作者数目, 即当作者数目超过下列数字时, 超出部分的作者姓名将略去
+FUNCTION {default.max.num.names.before.forced.et.al} { #3 }
+
+% 是否为盲审版本, #0 表示盲审将隐去作者信息, #1 表示非盲审
+FUNCTION {default.is.for.peer.review} { #0 }
+%%%%%%%%%%%%%%
+% 一些辅助函数
+%%%%%%%%%%%%%%
+% #0 不在终端显示开始/完成的提示信息
+% #1 显示提示信息
+FUNCTION {is.print.banners.to.terminal} {#1}
 
 %%%%%%%%%%%%%%%%
 % 版本与提示信息
 %%%%%%%%%%%%%%%%
 % 版本信息
-FUNCTION{bst.file.version} { "0.1" }
-FUNCTION{bst.file.date} { "2013/08/20" }
-FUNCTION{bst.file.website} {
-  "https://code.google.com/p/hnuthesis/" }
+FUNCTION{bst.file.version} { "0.2" }
+FUNCTION{bst.file.date} { "2009/01/25" }
+FUNCTION{bst.file.website} { 
+  "http://code.google.com/p/buptthesis/" }
 
 % 开始提示信息
-FUNCTION {banner.message}{
-is.print.banners.to.terminal
-    { "-- HNUTThesis.bst version" " " * bst.file.version *
-      " (" * bst.file.date * ") " * "by Du Jiayi." *
+FUNCTION {banner.message}{ 
+  is.print.banners.to.terminal
+    { "-- BUPTThesis.bst version" " " * bst.file.version *
+      " (" * bst.file.date * ") " * "by Yu Zhang." *
        top$
        "-- " bst.file.website *
        top$
-       "-- See the " quote$ * "userguide.pdf" * quote$ *
+       "-- See the " quote$ * "userguide.pdf" * quote$ * 
        " manual for usage information." *
        top$
     }
@@ -40,113 +56,298 @@ is.print.banners.to.terminal
 }
 
 % 完成提示信息
-FUNCTION {completed.message} {
-is.print.banners.to.terminal
+FUNCTION {completed.message} { 
+  is.print.banners.to.terminal
     { "" top$ "Done." top$ }
     { skip$ }
   if$
 }
 
-ENTRY
-  { address
-    author
-    booktitle
-    chapter
-	day
-    edition
-    editor
-	translator
-    howpublished
-    institution
-    journal
-    key
-    lang
-    month
-    note
-    number
-    organization
-    pages
-	nationality
-	patenttype
-	patentnumber
-    publisher
-    school
-    series
-    title
-    type
-    volume
-    year
-    url
+%%%%%%%%%%%%%%%%%%%
+%% 预定义的字符串宏
+%%%%%%%%%%%%%%%%%%%
+% 英文月份
+MACRO {jan} {"January"}
+MACRO {feb} {"February"}
+MACRO {mar} {"March"}
+MACRO {apr} {"April"}
+MACRO {may} {"May"}
+MACRO {jun} {"June"}
+MACRO {jul} {"July"}
+MACRO {aug} {"August"}
+MACRO {sep} {"September"}
+MACRO {oct} {"October"}
+MACRO {nov} {"November"}
+MACRO {dec} {"December"}
+
+%%%%%%%%%%%%
+%% 条目定义
+%%%%%%%%%%%%
+ENTRY { address			% 地址
+	assignee		% 标准授权人
+	author			% 作者
+	booktitle		% 专著/论文集名
+	chapter			% 
+	day			%
+	dayfiled		%
+	edition			% 版本
+	editor			% 编者
+	howpublished		% 出版形式
+	esubtype		% 电子文献子类
+	institution		% 
+	journal			% 期刊
+	key			%
+	language		% 语言
+	month			% 月
+	monthfiled		%
+	nationality		%
+	newsletter		%
+	note			%
+	number			%
+	number2			%
+	organization		%
+	pages			%
+	publisher		%
+	refdate			%
+	update			% 电子文档更新或修改日期
+	school			%
+	series			%
+	title			%
+	translator		%
+	type			%
+	volume			%
+	volume2			%
+	year			%
+	year2			%
+	yearfiled		%
+	url			% URL
+	pubaddress		% 出版地
+	CTLname_format_string	% 作者英文姓名排版格式
+	CTLmax_names_forced_etal % 强制略去的最大作者数
+	CTLauthor_name_english	 % 作者英文姓名
+	CTLauthor_name_chinese	 % 作者中文姓名
+	CTLfor_peer_review	 % 是否匿名
   }
   {}
   { label }
 
-INTEGERS { output.state before.all mid.sentence after.sentence after.block }
+%%%%%%%%%%%%%
+%% 字符串常量
+%%%%%%%%%%%%%
+% FUNCTION {bbl.anonymous}   { language empty$ { "Anon" }  { "佚名" } if$ }
+FUNCTION {bbl.anonymous} { "" }
+FUNCTION {bbl.etal}        { language empty$ { "\emph{et~al}" } { "等" } if$ }
+FUNCTION {bbl.sine.loco}   { language empty$ { "S.~l." } { "出版地不详" } if$ }
+FUNCTION {bbl.sine.nomine} { language empty$ { "s.~n." } { "出版者不详" } if$ }
 
-FUNCTION {not}
-{   { #0 }
+FUNCTION {bbl.comma}       { language empty$ { ", " } { "，" } if$ }
+FUNCTION {bbl.colon}       { language empty$ { ": " } { "：" } if$ }
+FUNCTION {bbl.period}      { language empty$ { "." } { "．" } if$ }
+FUNCTION {bbl.parallel}    { "~//~" }
+
+FUNCTION {bbl.st}          { "st" }	% 序数词后缀
+FUNCTION {bbl.nd}          { "nd" }	% 序数词后缀
+FUNCTION {bbl.rd}          { "rd" }	% 序数词后缀
+FUNCTION {bbl.th}          { "th" }	% 序数词后缀
+
+FUNCTION {bbl.number}      { "第" }
+FUNCTION {bbl.author}      { "作者" }
+
+%%%%%%%%%%%%
+%% 整型变量
+%%%%%%%%%%%
+INTEGERS { output.state before.all mid.sentence after.title after.sentence url.sentence after.block before.pages }
+INTEGERS { number.label longest.label.width multiresult 
+	   nameptr namesleft numnames lastnamecapitalized namelength charptr }
+INTEGERS { max.num.names.before.forced.et.al }
+INTEGERS { is.for.peer.review }
+
+%%%%%%%%%%%%%
+%% 字符串变量
+%%%%%%%%%%%%%
+STRINGS { s 
+	  t 
+	  longest.label 
+	  thename 
+	  name.emph.author.en	% 强调现实的作者英文姓名
+	  name.emph.author.zh	% 强调显示的作者中文姓名
+	  name.format.string	% 姓名的格式字符串
+	  author.name.in.english % 作者英文姓名
+	  author.name.in.chinese % 作者中文姓名
+}
+
+%%%%%%%%%%%%%%%%%%%%%
+%% LaTeX 参考文献代码
+%%%%%%%%%%%%%%%%%%%%%
+
+% 输出 .bbl 文件开始
+FUNCTION {begin.bib} { 
+  "% Generated by BUPTThesis.bst, version: " bst.file.version * 
+  " (" * bst.file.date * ")" *
+  write$ newline$		% 输出注释行，说明产生该bbl的bst及版本
+
+  preamble$ empty$		% 输出前导
+    'skip$
+    { preamble$ write$ newline$ }
+  if$
+
+  "\begin{thebibliography}{"  longest.label  * "}" * 
+  write$ newline$		% 输出 \begin{thebiliography}{x}
+}
+
+% 输出 .bbl 文件结束部分
+FUNCTION {end.bib} {
+  newline$
+  "\end{thebibliography}" 
+  write$ newline$
+}
+
+%%%%%%%%%%%%
+%% 底层函数
+%%%%%%%%%%%%
+
+% 控制变量初始化
+FUNCTION {initialize.controls} {
+  default.name.format.string 'name.format.string :=
+  default.max.num.names.before.forced.et.al 'max.num.names.before.forced.et.al :=
+  default.is.for.peer.review 'is.for.peer.review :=
+}
+
+% 初始化最长 label
+FUNCTION {initialize.longest.label} { 
+  "" 'longest.label :=
+  #1 'number.label :=
+  #0 'longest.label.width :=
+}
+
+% 最长 label pass
+FUNCTION {longest.label.pass}
+{ number.label int.to.str$ 'label :=
+  number.label #1 + 'number.label :=
+  label width$ longest.label.width >
+    { label 'longest.label :=
+      label width$ 'longest.label.width :=
+    }
+    { skip$ }
+  if$
+}
+
+% 逻辑非: 栈顶元素的逻辑非
+FUNCTION {not} {
+    { #0 }
     { #1 }
   if$
 }
 
-FUNCTION {and}
-{   'skip$
+% 逻辑与
+FUNCTION {and} {   
+    { skip$ }
     { pop$ #0 }
   if$
 }
 
-FUNCTION {or}
-{   { pop$ #1 }
-    'skip$
+% 逻辑或
+FUNCTION {or} {
+    { pop$ #1 }
+    { skip$ }
   if$
 }
 
-FUNCTION {init.state.consts}
-{ #0 'before.all :=
-  #1 'mid.sentence :=
-  #2 'after.sentence :=
-  #3 'after.block :=
+% 返回 #1 : 栈顶字符是数字"0"~"9"
+% 返回 #0 : 其他
+FUNCTION {is.num} {
+  chr.to.int$
+  duplicate$ "0" chr.to.int$ < not
+  swap$ "9" chr.to.int$ > not and
 }
 
-STRINGS { s t }
+% 栈顶整数乘以10
+FUNCTION {bump.int.mag} {
+  #0 'multiresult :=		% 初始化乘运算结果 y <- 0
+  { duplicate$ #0 > }		% 栈顶整数 x = 0 时才停止循环
+  { #1 -			% x <- x - 1
+    multiresult #10 +		
+    'multiresult :=		% y <- y + 10
+  }
+  while$
+  pop$				% 释放 x 
+  multiresult			% y 压栈返回
+}
 
-FUNCTION {output.nonnull}
-{ 's :=
-  output.state mid.sentence =
-    { ", " * write$ }
-    { output.state after.block =
-    { add.period$ write$
-      newline$
-      "\newblock " write$
-    }
-    { output.state before.all =
-        'write$
-        { add.period$ " " * write$ }
-      if$
-    }
-      if$
-      mid.sentence 'output.state :=
+% 将栈顶字符("0"~"9")转换为整数(0~9)
+FUNCTION {char.to.integer} { 
+  duplicate$ 
+  is.num
+    { chr.to.int$ "0" chr.to.int$ - }
+    { "noninteger character " quote$ * swap$ * quote$ *
+      " in integer field of " * cite$ * warning$
+      #0			% 如果栈定字符不是("0"~"9"), 给出警告返回 0
     }
   if$
-  s
 }
 
-FUNCTION {output.year}
+% 将栈顶字符串转换为整数
+FUNCTION {string.to.integer} { 
+  duplicate$ text.length$ 'namesleft := % namesleft <- 字符串长度
+  #1 'nameptr :=			% nameptr   <- 1
+  #0 'numnames :=			% numnames  <- 0
+  { nameptr namesleft > not }		% while( ! ( nameptr > namesleft ) )
+  { duplicate$ nameptr #1 substring$	% 取第 nameptr 个字符 x
+    char.to.integer numnames bump.int.mag + 
+    'numnames :=		        % numnames <- chr2int( x ) + 10 * numnames
+    nameptr #1 +			
+    'nameptr :=				% nameptr <- nameptr + 1
+  }
+  while$
+  pop$				        % 释放栈顶元素
+  numnames				% numnames 压栈返回
+}
+
+% convert the strings "yes" or "no" to #1 or #0 respectively
+FUNCTION {yes.no.to.int}
+{ "l" change.case$ duplicate$
+    "yes" =
+    { pop$  #1 }
+    { duplicate$ "no" =
+        { pop$ #0 }
+        { "unknown boolean " quote$ * swap$ * quote$ *
+          " in " * cite$ * warning$
+          #0
+        }
+      if$
+    }
+  if$
+}
+
+% 初始化状态常量
+FUNCTION {initialize.status.constants}
+{ #0 'before.all :=		% 起始
+  #1 'mid.sentence :=		% 句中
+  #2 'after.sentence :=		% 句末
+  #3 'after.block :=		% 块后
+  #4 'after.title :=            %
+  #5 'before.pages :=		%
+}
+
+FUNCTION {remove.char}
 { 't :=
-  number empty$
-  volume empty$
-  and
-    { add.period$ write$ }
-    { ", " * write$ }
-  if$
-  t
+  's :=
+  ""
+  { s empty$ not }
+  { s #1 #1 substring$
+    s #2 global.max$ substring$ 's :=
+    duplicate$ t = 'pop$
+      { * }
+    if$
+  }
+  while$
 }
 
 STRINGS {z}
-FUNCTION {remove.dots}
+FUNCTION {remove.period}
 { 'z :=
   ""
-  { z empty$ not}
+  { z empty$ not }
   { z #1 #1 substring$
     z #2 global.max$ substring$ 'z :=
     duplicate$ "." = 'pop$
@@ -154,7 +355,19 @@ FUNCTION {remove.dots}
     if$
   }
   while$
-  z
+}
+
+FUNCTION {remove.dots} {
+  duplicate$ "input=" swap$ * warning$ 
+  "language=" language * warning$
+  language empty$
+    { "." remove.char 
+      duplicate$ "output('.')=" swap$ * warning$ }
+    { "．" remove.char 
+      duplicate$ "output('．')=" swap$ * warning$
+      "." remove.char 
+      duplicate$ "output('.')=" swap$ * warning$ }
+  if$
 }
 
 FUNCTION {bibinfo.check}
@@ -176,41 +389,273 @@ FUNCTION {bibinfo.check}
   if$
 }
 
-FUNCTION {format.note}
-{
- note empty$
-    { "" }
-    { note #1 #1 substring$
-      duplicate$ "{" =
-        'skip$
-        { output.state mid.sentence =
-          { "l" }
-          { "u" }
-        if$
-        change.case$
+%%%%%%%%%%%%
+%% 调试例程
+%%%%%%%%%%%%
+
+% 默认调试输出函数
+FUNCTION {debug.output} {
+  "[DEBUG] " swap$ * top$ 
+}
+
+% 状态调试输出函数
+FUNCTION {debug.output.status} {
+  "---- output.state=" 
+  output.state before.all = 
+    { "before.all" }
+    { output.state mid.sentence =
+	{ "mid.sentence" }
+	{ output.state after.sentence =
+	    { "after.sentence" }
+	    { output.state url.sentence =
+		{ "url.sentence" }	
+		{ output.state before.pages =
+		    { "before.pages" }
+		      { "after.block" }
+		  if$
+		}
+	      if$
+	    }
+	  if$
+	}
+      if$
+    }
+  if$
+  * debug.output
+}
+
+FUNCTION {output.year}
+{ 't :=
+  number empty$
+  volume empty$
+  and
+    { add.period$ write$ }
+    { ", " * write$ }
+  if$
+  t
+}
+
+% STRINGS {z}
+% FUNCTION {remove.dots}
+% { 'z :=
+%   ""
+%   { z empty$ not }
+%   { z #1 #1 substring$
+%     z #2 global.max$ substring$ 'z :=
+%     duplicate$ bbl.period = 'pop$
+%       { * }
+%     if$
+%   }
+%   while$
+%   %z
+% }
+
+% 对于中文文献, 用全角句点替换英文句点
+FUNCTION {replace.half.width.period} {
+%   % DEBUG
+%   duplicate$ "-- replace.half.width.period(" swap$ * ")" * debug.output
+%   % END OF DEBUG
+  language empty$
+    { " " * }				   % 对于英文文献, 在句点后加一空格
+    { duplicate$ text.length$ 'numnames := % numnames 等于字符串长度
+%       % DEBUG
+%       numnames int.to.str$ "---- text.length$=" swap$ * debug.output
+%       % END OF DEBUG
+      duplicate$ numnames #1 substring$ "." =
+	{ % % DEBUG
+% 	  "---- Found '.' at the end" debug.output
+% 	  % END OF DEBUG
+	  numnames #1 -
+	  #1 swap$ substring$
+	  bbl.period *
+	}
+	{ skip$ }
+      if$
+    }
+  if$
+%   % DEBUG
+%   duplicate$ "---- Return=" swap$ * debug.output
+%   % END OF DEBUG
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 输出例程: 输出栈顶项并根据需要添加标点符号
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 非空项输出函数: 用于输出非空项
+FUNCTION {output.nonnull} {
+%   % DEBUG
+%   duplicate$ "output.nonnull(" swap$ * ")" * debug.output
+%   debug.output.status
+%   % END OF DEBUG
+  swap$
+  % 根据当前输出状态添加前置标点符号
+  % before.all      起始, 不添加任何标点符号直接输出
+  % mid.sentence    句中, 前置逗号输出
+  % after.sentence  句末, 前置句号输出
+  % after.block     块后, 前置句号, 后置 \newblock 输出
+  % after.title
+  output.state mid.sentence =
+    { bbl.comma * write$ }	% mid.sentence 前置逗号
+    { output.state after.block =
+	{ add.period$		    % 块后, 后置句号
+	  replace.half.width.period % 为中文文献替换句点
+	  write$ 
+	  newline$  
+%	  "\newblock "  write$ 
+	} % 后置 \newblock 输出
+	{ output.state before.all =
+            { write$ }		% 起始, 不添加任何标点符号直接输出
+            { output.state after.title =
+		{ bbl.parallel *
+		  write$ }
+		{ output.state before.pages =
+		    { bbl.colon * 
+		      write$ }
+		    { add.period$ 	% 句末, 前置句号输出
+		      replace.half.width.period 
+		      write$ }		% 
+		  if$
+		}
+	      if$
+	    }
+	  if$
+	}
+      if$
+      mid.sentence 'output.state :=
+    }
+  if$
+  % s
+}
+
+% 无警告输出函数
+FUNCTION {output} { 
+  duplicate$ empty$
+    { pop$ }			% 若输出项为空, 则舍去空输出项
+    { output.nonnull }		% 否则调用非空输出函数
+  if$
+}
+
+% 警告输出函数: 同 output, 但是对于空项给出警告提示
+FUNCTION {output.warn}
+{ 't :=
+  duplicate$ empty$
+    { pop$ "empty " t * " in " * cite$ * warning$ }
+    { output.nonnull }
+  if$
+}
+
+% 将数字字符串转换成序数词形式字符串(例如: "7" -> "7th")
+FUNCTION {num.to.ordinal} { 
+  duplicate$ #-1 #1 substring$ "1" =
+     { bbl.st * }
+     { duplicate$ #-1 #1 substring$ "2" =
+         { bbl.nd * }
+         { duplicate$ #-1 #1 substring$ "3" =
+             { bbl.rd * }
+             { bbl.th * }
+           if$
+         }
+       if$
+     }
+   if$
+}
+
+% 从字符串中提取前导数字的函数
+% 如果栈顶字符串以数字开头(例如: "11th"), 则将字符串用其数字部分(即,"11")
+% 替换. 否则, 保持原字符串不变. 用于版本转换函数(convert.edition)
+% s 保存提取出的数字, t 保存剩余待扫描的字符串.
+FUNCTION {extract.num} {
+  duplicate$ 't :=		% t <- 输入字符串
+  "" 's :=			% s <- ""
+  { t empty$ not }		% while( t != "" ) {
+  { t #1 #1 substring$		%   tmp <- t[0]
+    t #2 global.max$ substring$ 
+    't :=			%   t <- t[2:global.max$]
+    duplicate$ is.num		%   if( is.num( tmp ) )
+      { s swap$ * 's := }	%     s <- s & tmp
+      { pop$ "" 't := }		%   else t <- ""
+    if$				% }
+  }				% 
+  while$			% if( s == "" )
+  s empty$			%   ;
+    'skip$			% else
+    { pop$ s }			%   return s
+  if$				%
+}
+
+% 将1st~10th单词形式的序数词转换成阿拉伯数字形式
+FUNCTION {word.to.num} {
+  duplicate$ "l" change.case$ 
+  's :=				% s <- lower( arg )
+  s "first" =			% if ( s == "first" )
+    { pop$ "1" }		%   return "1"
+    { skip$ }
+  if$
+  s "second" =			% if ( s == "second" )
+    { pop$ "2" }		%   return "2"
+    { skip$ }
+  if$
+  s "third" =
+    { pop$ "3" }
+    { skip$ }
+  if$
+  s "fourth" =
+    { pop$ "4" }
+    { skip$ }
+  if$
+  s "fifth" =
+    { pop$ "5" }
+    { skip$ }
+  if$
+  s "sixth" =
+    { pop$ "6" }
+    { skip$ }
+  if$
+  s "seventh" =
+    { pop$ "7" }
+    { skip$ }
+  if$
+  s "eighth" =
+    { pop$ "8" }
+    { skip$ }
+  if$
+  s "ninth" =
+    { pop$ "9" }
+    { skip$ }
+  if$
+  s "tenth" =
+    { pop$ "10" }
+    { skip$ }
+  if$
+}
+
+% 转换字符串形式的序数词为数字形式的序数词
+% 例如: 将 "Eleventh" 转换为 "11th"
+FUNCTION {convert.edition} { 
+  duplicate$ empty$ 'skip$
+    { duplicate$ #1 #1 substring$ 
+      is.num			% if( is.num( arg[1] ) ) {
+        { extract.num		%   tmp <- extract.num( arg )
+          num.to.ordinal	%   tmp <- num.to.ordinal( tmp )
+        }			% } else {
+        { word.to.num		%   tmp <- word.to.num( arg )
+          duplicate$ #1 #1 substring$ 
+	  is.num		%   if( is.num( tmp[1] ) )
+            { num.to.ordinal }	%     tmp <- num.to.ordinal( tmp )
+            { "edition ordinal word " 
+	      quote$ * edition * quote$ *
+              " may be too high (or improper) for conversion" * 
+	      " in " * cite$ * warning$ % else output warning
+            }
+          if$
         }
       if$
-      note #2 global.max$ substring$ * "note" bibinfo.check
     }
   if$
 }
 
-FUNCTION {output}
-{ duplicate$ empty$
-    'pop$
-    'output.nonnull
-  if$
-}
-
-FUNCTION {output.check}
-{ 't :=
-  duplicate$ empty$
-    { pop$ "empty " t * " in " * cite$ * warning$ }
-    'output.nonnull
-  if$
-}
-
-FUNCTION {output.bibitem}
+FUNCTION {start.entry}
 { newline$
   "\bibitem{" write$
   cite$ write$
@@ -220,15 +665,20 @@ FUNCTION {output.bibitem}
   before.all 'output.state :=
 }
 
-
 FUNCTION {fin.entry}
-{ duplicate$ empty$
-    'pop$
-    'write$
-  if$
+{ add.period$
+  replace.half.width.period
+  write$
   newline$
 }
 
+% FUNCTION {fin.entry}
+% { duplicate$ empty$
+%     'pop$
+%     'write$
+%   if$
+%   newline$
+% }
 
 FUNCTION {new.block}
 { output.state before.all =
@@ -247,7 +697,6 @@ FUNCTION {new.sentence}
     }
   if$
 }
-
 
 FUNCTION {new.block.checka}
 { empty$
@@ -295,106 +744,321 @@ FUNCTION {emphasize}
   if$
 }
 
-INTEGERS { nameptr namesleft numnames }
 
-FUNCTION {bbl.etal}
-{ "et~al" }
 
-FUNCTION {bbl.cn.etal}
-{ "等" }
 
-FUNCTION {format.lang}
-{ lang empty$
+
+FUNCTION {format.language}
+{ language empty$
     'skip$
     'skip$
   if$
  }
-
-FUNCTION {format.names}
-{ 's :=
-  #1 'nameptr :=
-  s num.names$ 'numnames :=
-  numnames 'namesleft :=
-    { namesleft #0 > }
-    { s nameptr
-      "{ff~}{vv~}{ll}{, jj}"
-      format.name$
-      %bibinfo bibinfo.check
-      't :=
-      nameptr #1 >
-        {
-          nameptr #3
-          #1 + =
-          numnames #3
-          > and
-		  %> ,
-            { "others" 't :=
-              #1 'namesleft := }
-            'skip$
-          if$
-          namesleft #1 >
-            { ", " * t * }
-            { numnames #2 >
-              { "" * }
-              'skip$
-              if$
-              s nameptr "{ll}" format.name$ duplicate$ "others" =
-                { 't := }
-                { pop$ }
-              if$
-              t "others" =
-                {
-                  lang empty$
-                   { ", " * bbl.etal * }
-                    { lang "zh" =
-                       { ", " * bbl.cn.etal * }
-                       'skip$
-                      if$
-                    }
-                  if$
-                }
-                {
-                  lang empty$
-                    { ", " * t * }
-                    { lang "zh" =
-                       { ", " * t * }
-                       'skip$
-                     if$
-                    }
-                  if$
-                }
-              if$
-            }
-          if$
-        }
-        't
+FUNCTION {is.space}
+{ chr.to.int$
+  duplicate$ #32 =
+    { pop$ #1 }
+    { pop$ #0 }
+  if$
+}
+FUNCTION {is.lower.char}
+{
+  chr.to.int$
+  duplicate$ #96 >
+    { #123 < 
+	{ #1 }
+	{ #0 }
       if$
-      nameptr #1 + 'nameptr :=
-      namesleft #1 - 'namesleft :=
     }
-  while$
+    { pop$ #0 }
+  if$
 }
 
+% 将last name转换为全大写
+FUNCTION {capitalize.last.name} {
+  "u" change.case$
+}
+% FUNCTION {capitalize.last.name}
+% { 
+%   'thename :=			% 输入参数 thename
+%   thename text.length$ 
+%   'namelength :=		% namelength := thename 的长度
+%   #1 'charptr :=
+%   #0 'lastnamecapitalized :=
+%   ""
+  
+%   { charptr #1 - namelength < 
+%     %     % debug
+%     %     duplicate$ int.to.str$ "( charptr + #1 > namelength ) == " swap$ * warning$ 
+%     %     % eod
+%   }
+%   { 
+%     %     % debug
+%     %     "charptr = " charptr int.to.str$ * 
+%     %     ", lastnamecapitalized = " * 
+%     %     lastnamecapitalized int.to.str$ * warning$
+%     %     % eod
+%     lastnamecapitalized #1 = 
+% 	{	thename charptr namelength charptr - #1 + substring$ *
+% 		namelength #1 + 'charptr := 
+% 		% 	% debug
+% 		% 	duplicate$ "top of the stack = " swap$ * warning$
+% 		% 	% eod
+% 	}
+% 	{ thename charptr #1 substring$ 
+% 	  % 	% debug
+% 	  % 	duplicate$ "the char = " swap$ * warning$
+% 	  % 	% eod
+% 	  duplicate$ is.lower.char 
+% 	    % 	% debug
+% 	    % 	duplicate$ int.to.str$ "is.lower.char = " swap$ * warning$
+% 	    % 	  % eod
+% 	    { "u" change.case$ * }
+% 	    { duplicate$ is.space
+% 		% 	    % debug
+% 		% 	    duplicate$ int.to.str$ "is.space = " swap$ * warning$
+% 		% 	      % eod
+% 		{ #1 'lastnamecapitalized :=
+% 		  *
+% 		}
+% 		{ *
+% 		}
+% 	      if$
+% 	    }
+% 	  if$
+% 	  % 	% debug
+% 	  % 	duplicate$ "top of the stack = " swap$ * warning$
+% 	  % 	% eod
+% 	  charptr #1 + 'charptr :=
+% 	}
+%     if$
+%   }
+%   while$
+% }
+% 格式化盲审姓名
+FUNCTION {format.names.for.peer.review} {
+  's :=				% s := author域
+  #1 'nameptr :=		% nameptr 是姓名指针，初始化为 1
+  s num.names$ 'numnames :=     % 利用 num.names$ 获得 s 中的作者数量存入 nameptr
+  numnames 'namesleft :=	% 未处理的姓名数 namesleft := numnames
+  % 循环处理所有姓名
+  { namesleft #0 > }		% if namesleft > #0 (还有姓名没有格式化)
+  { s nameptr 			% 选择第 nameptr 个姓名
+    name.format.string		% 按 name.format.string 的格式排版
+    format.name$		% 调用 format.name$
+    remove.period		% 并删除缩写符号'.'
+    't :=			% 格式化后的姓名暂存于 t
+    language empty$		
+      { author.name.in.english }% 如果是英文文献将 author.name.in.english 压栈
+      { author.name.in.chinese } % 否则将 author.name.in.chinese 压栈
+    if$
+    t =				% 用当前的姓名与栈上的姓名做比较
+      { nameptr int.to.str$	% 将作者序号转化为字符串
+	"\CJKnumber{" swap$ * "}" * % 使用中文数字
+	bbl.number swap$ * bbl.author * % 加上``第''和``作者''
+%	duplicate$ debug.output
+      }
+      { skip$ }
+    if$
+    nameptr #1 + 'nameptr :=	% 姓名指针加 1
+    namesleft #1 - 'namesleft := % 剩余姓名数减 1
+  }
+  while$
+}
+% 格式化非盲审姓名
+FUNCTION {format.names.for.non.peer.review} { 
+  % 初始化
+  's :=				% s := author域
+  #1 'nameptr :=		% nameptr 是姓名指针，初始化为 1
+  s num.names$ 'numnames :=	% 利用 num.names$ 获得 s 中的作者数量存入 nameptr
+  numnames 'namesleft :=	% 未处理的姓名数 namesleft := numnames
+  % 循环处理所有姓名
+  { namesleft #0 > }		% if namesleft > #0 (还有姓名没有格式化)
+  { s nameptr 			% 选择第 nameptr 个姓名
+    name.format.string		% 按 name.format.string 的格式排版
+    format.name$		% 调用 format.name$
+%     language empty$		
+%       {	"u" change.case$ }	% 如果不是语言为空, 做大写转换
+%       {	skip$ }
+%     if$				% <language 判断结束>
+    remove.period		% 并删除缩写符号'.'
+    't :=			% 格式化后的姓名暂存于 t
+    nameptr #1 >
+      { nameptr max.num.names.before.forced.et.al #1 + =
+          { "others" 't :=	% 如果当前作者的序数已经超出了最大列显作者数
+            #1 'namesleft := }	% 则置未处理姓名数为#1, 以便跳出循环
+          { skip$ }		% 如果作者序数在允许范围内, 则跳过
+        if$			% <et al 判断结束>
+	bbl.comma *		% 添加逗号
+        namesleft #1 >		% 若当前姓名不是最后一个
+          { t * }		% 显示当前姓名	
+          { t "others" =	% 若当前姓名是最后一个且后面有略去的姓名
+              { bbl.etal * }	% 添加", et~al"或"，等"
+	      { t * }		% 如果没有略去姓名，以句点结束
+	    if$			% <others 判断结束>
+	  }
+        if$ 			% <namesleft 判断结束>
+      }
+      { t }			% 如果是第一个作者, 直接将排版后的姓名压栈
+    if$
+    nameptr #1 + 'nameptr :=	% 姓名指针加 1
+    namesleft #1 - 'namesleft := % 剩余姓名数减 1
+  }
+  while$
+}
+% 格式化姓名
+FUNCTION {format.names} {
+  is.for.peer.review 
+    { format.names.for.peer.review }	 % 格式化盲审姓名
+    { format.names.for.non.peer.review } % 格式化非盲审姓名
+  if$
+}
 FUNCTION {format.authors}
 { author empty$
-    { "" }
+    { bbl.anonymous
+      "The author in " cite$ * " is missing." * warning$ }
     { author format.names }
   if$
 }
 
-FUNCTION {editors.names}
-{ lang empty$
-    { ", (eds.)" }
-    { ", 编" }
+FUNCTION {format.editors}
+{ editor empty$
+    { bbl.anonymous
+      "The editor in " cite$ * " is missing." * warning$ 
+    }
+    { editor format.names }
   if$
 }
 
-
-FUNCTION {format.editors}
-{ editor empty$
+FUNCTION {format.assignees} {
+  assignee empty$
     { "" }
-    { editor format.names
-     editors.names *
+    { assignee format.names }
+  if$
+}
+
+% 译者格式
+FUNCTION {format.translators}
+{ translator empty$
+    { "" }			% 无译者
+    { new.block			% 有译者
+      translator format.names "，译" *
+    }
+  if$
+}
+
+% 机构格式
+FUNCTION {format.institution} { 
+  institution empty$
+    { "" }
+    { institution }
+  if$
+}
+
+% 组织格式
+FUNCTION {format.organization} { 
+  organization empty$
+    { "" }
+    { organization }
+  if$
+}
+
+% 文献类型标志代码/电子文献载体标志代码
+FUNCTION {bib.type.designator} {
+%   % DEBUG
+%   "bib.type.designator(type:" type$ * debug.output
+%   "                    url: " url empty$ { "<N/A>" }{ url } if$  * debug.output
+%   % END OF DEBUG
+
+  % 文献类型标志代码
+  type$ "book" = type$ "inbook" = or
+    { "M" }
+    { type$ "standard" = 
+	{ "S" }
+	{ type$ "proceedings" = type$ "conference" = or type$ "inproceedings" = or
+	    { "C" }
+	    { type$ "patent" =
+		{ "P" }
+		{ type$ "phdthesis" = type$ "mastersthesis" = or
+		    { "D" }
+		    { type$ "techreport" = 
+			{ "R" }
+			{ type$ "article" = type$ "periodical" = or
+			    { "J" }
+			    { type$ "online" = type$ "webpage" = or type$ "www" = or
+				{ "EB" }
+				{ type$ "electronic" =
+				    { esubtype empty$
+					{ url empty$
+					    { "" }
+					    { "EB" }
+					  if$
+					}
+					{ esubtype "webpage" = 
+					    { "EB" }
+					    { esubtype "database" =
+						{ "DB" }
+						{ esubtype "program" =
+						    { "CP" }
+						    { "" }
+						  if$ % electronics[program]
+						}
+					      if$ % electronics[database]
+					    }
+					  if$ % electronics[webpage]
+					}
+				      if$
+				    }
+				    { "" } % 其他
+				  if$	   % electronics
+				}
+			      if$ % online/webpage/www
+			    }
+			  if$	% article/periodical
+			}
+		      if$ 	% techreport
+		    }
+		  if$		% phdthesis/mastersthesis
+		}
+	      if$ 		% patent
+	    }
+	  if$			% proceedings/inproceedings/conference
+	}
+      if$			% standard
+    }
+  if$ 				% book/inbook
+%   % DEBUG
+%   duplicate$ "                    doc.designator: " swap$ * debug.output
+%   % END OF DEBUG
+  % 电子文献载体标志代码
+  duplicate$ "" =
+    { skip$ }
+    { "~[" swap$ *
+      howpublished empty$ 
+	{ url empty$
+	    { "" }
+	    { "/OL" }
+	  if$
+	}
+	{ howpublished "online" =
+	    { "/OL" }
+	    { howpublished "magtype" =
+		{ "MT" }
+		{ howpublished "disk" =
+		    { "DK" }
+		    { howpublished "cdrom" =
+			{ "CD" }
+			{ "" }
+		      if$	% cdrom
+		    }
+		  if$		% disk
+		}
+	      if$		% magitude type
+	    }
+	  if$			% online
+	}
+      if$ 
+      * "]" *
     }
   if$
 }
@@ -402,7 +1066,173 @@ FUNCTION {format.editors}
 FUNCTION {format.title}
 { title empty$
     { "" }
-    { title }
+    { new.block
+      title }
+  if$
+}
+
+% 格式化年月日``YYYY-MM-DD''
+FUNCTION {format.year.month.day} { 
+  year empty$
+    { "YYYY" }
+    { year }
+  if$
+  "-" *
+  month empty$
+    { "MM" * } 
+    { month text.length$ #2 <
+	{ "0" * }
+	{ skip$ }
+      if$
+      month * 
+    }
+  if$
+  "-" *
+  day empty$
+    { "DD" * }
+    { day text.length$ #2 <
+	{ "0" * }
+	'skip$
+      if$
+      day *
+    }
+  if$
+}
+
+FUNCTION {format.reference.date} {
+  refdate empty$
+    { ""
+      url empty$
+	{ skip$ }
+	{ "The refdate in " cite$ * " is missing." * warning$ }
+      if$
+    }
+    { output.state mid.sentence =
+	{ before.all 'output.state := }
+	{ skip$ }
+      if$
+      "~[" refdate * "]" * }
+  if$
+}
+
+% patent的题名项: 专利题名: 专利国别, 专利号~[文献类型标志]
+FUNCTION {format.patent.title} { 
+  title empty$			% 专利提名
+    { "" }
+    { new.block
+      title bbl.colon * 
+      nationality empty$		% 专利国别, 专利号
+	{ % 专利国别为必备项
+	  "The nationality in " cite$ * " is missing." * warning$
+	}
+	{ number empty$
+	    { % 专利号为必选项
+	      "The number in " cite$ * " is missing." * warning$
+	    }
+	    { % 产生``专利国别, 专利号''
+	      nationality * bbl.comma * number *
+	    }
+	  if$
+	}
+      if$
+      % 文献类型标志
+      bib.type.designator *
+    }
+  if$
+}
+
+% patent的出版项:
+FUNCTION {format.patent.publication} { 
+  new.block
+  format.year.month.day
+%   % DEBUG
+%   duplicate$ "End of format.patent.publication, top = " swap$ * debug.output
+%   % END OF DEBUG
+  url empty$
+    { skip$ }
+    { refdate empty$
+	{ "The refdate in " cite$ * " is missing." * warning$ }
+	{ "~[" * refdate * "]" * }
+      if$
+    }
+  if$
+}
+
+% electronic的主要责任者:
+%   author 或 organization
+FUNCTION {format.electronic.authors}
+{
+  author empty$
+    { organization empty$
+	{ " " }
+	{ organization }
+      if$
+    }
+    { format.authors }
+  if$
+}
+
+% electronic的出版项
+FUNCTION {format.electronic.publication} { 
+  new.block
+  % 出版地: 出版者
+  address empty$
+    { "" }
+    { address 
+      publisher empty$
+	{ skip$ }
+	{ bbl.colon * publisher * }
+      if$
+    }
+  if$
+  
+  % 出版年
+  year empty$
+    { skip$ }
+    { publisher empty$ 
+	{ "" }
+	{ bbl.comma }
+      if$ 
+      * year * }
+  if$
+}
+
+%% article的标题格式
+FUNCTION {format.atitle}
+{ title empty$
+    { "" }
+    { title 
+      newsletter empty$
+	{ "~[J" * }
+	{ newsletter "yes" =
+	    { "~[N" * }
+	    { "~[J" * }
+	  if$
+	}
+      if$
+      url empty$
+	{ "]" * }
+	{ "/OL]" * }
+      if$
+    }
+  if$
+}
+%% incollection的标题格式
+FUNCTION {format.ictitle}
+{ title empty$
+    { "" }
+    { title "~[M]~//~" * 
+      editor format.names *
+    }
+  if$
+}
+%% inproceedings的标题格式
+FUNCTION {format.iptitle}
+{ title empty$
+    { "" }
+    { title "~[C]~//~" * 
+      editor format.names *
+    }
   if$
 }
 
@@ -431,37 +1261,138 @@ FUNCTION {n.dashify}
   while$
 }
 
+% 年，卷（期）
+FUNCTION {format.year.volume.number} {
+  year empty$
+    { "" }
+    { type$ "periodical" =
+	{ new.block }
+	{ mid.sentence 'output.state := }
+      if$
+      year 
+      volume empty$
+	'skip$
+	{ bbl.comma * volume * }
+      if$
+      number empty$
+	'skip$
+	{ "~(" * number * ")" * }
+      if$ 
+      year2 empty$
+	{ skip$ }
+	{ "~--" * 
+	  year2 "now" =
+	    { skip$ }
+	    { year2 * 
+	      volume2 empty$
+		{ skip$ }
+		{ bbl.comma * volume2 * }
+	      if$
+	      number2 empty$
+		'skip$
+		{ "~(" * number2 * ")" * }
+	      if$
+	    }
+	  if$
+	}
+      if$
+    }
+  if$
+%   %% DEBUG
+%   duplicate$ "format.year.volume.number=" swap$ * debug.output
+%   %% END OF DEBUG
+}
+
+%
 FUNCTION {format.date}
 { year empty$
     { month empty$
-    { "" }
-    { "there's a month but no year in " cite$ * warning$
-      month
-    }
+	{ "" }
+	{ "there's a month but no year in " cite$ * warning$
+	  month
+	}
       if$
     }
     { month empty$
-    'year
-    { year "-" * month *}
+	{ year }
+	{ month bbl.comma * year * }
       if$
     }
   if$
 }
-
-FUNCTION {date}
-{ day empty$
-    { "there's a year and month but no day in " cite$ * warning$
-      format.date
-    }
-	{ format.date "-" * day *
-	}
+function {format.year.year}
+{ year empty$
+    'skip$
+    { year "--" *
+    year2 empty$
+      'skip$
+      { year2 "now" =
+	  'skip$
+	  { year2 * }
 	if$
- }
-
-FUNCTION {format.btitle}
-{ title %emphasize
+      }
+    if$
+    }
+  if$
 }
 
+% 专著标题格式
+FUNCTION {format.book.title} { 
+  new.block			% 生成一个新的block
+  title 
+  type$ "proceedings" =
+    { address empty$
+	{ skip$ }
+	{ bbl.comma * address * bbl.comma * 
+	  month empty$
+	    { skip$ }
+	    { month * }
+	  if$
+	  year empty$
+	    { skip$ }
+	    { year * }
+	  if$
+	}
+      if$
+    }
+    { skip$ }
+  if$
+  bib.type.designator *	% 标题 + [文献标志代码/电子文献载体标志代码]
+}
+
+% 科技报告标题格式
+FUNCTION {format.techreport.title} { 
+  title empty$
+    { "" }
+    { new.block			% 生成一个新的block
+      title			% 标题 + 
+      number empty$		% 编号 +
+	{ "" }
+	{ bbl.comma * number }
+      if$ *	  
+      bib.type.designator *	% [文献标志代码/电子文献载体标志代码]
+    }
+  if$
+}
+
+% 连续出版物标题格式
+FUNCTION {format.jtitle}
+{ title "~[J" *
+  url empty$
+    { "]" * }
+    { "/OL]" * }
+  if$
+}
+
+% 论文集标题格式
+FUNCTION {format.ptitle.volume}
+{ title 
+  volume empty$
+    { "~[C]" }
+    { bbl.colon volume * "~[C]" * }
+  if$ *
+  %emphasize
+}
 FUNCTION {tie.or.space.connect}
 { duplicate$ text.length$ #3 <
     { "~" }
@@ -480,10 +1411,13 @@ FUNCTION {either.or.check}
 FUNCTION {format.bvolume}
 { volume empty$
     { "" }
-    { "volume" volume tie.or.space.connect
+    { language empty$
+	{ "volume" volume tie.or.space.connect }
+	{ volume }
+      if$
       series empty$
     'skip$
-    { " of " * series * }
+    { " of " * series emphasize * }
       if$
       "volume and number" number either.or.check
     }
@@ -509,46 +1443,31 @@ FUNCTION {format.number.series}
     { "" }
   if$
 }
-%%专利国别，类型，专利号%%%
-FUNCTION {format.nationality}
-{ nationality empty$
-{"The nationality in " cite$ * " is missing." * warning$}
-{nationality }
-if$
-}
 
-FUNCTION {format.patenttype}
-{ patenttype empty$
-  {""}
-  {patenttype}
-		if$
-		}
-		
-FUNCTION {format.patentnumber}
-{ patenttype empty$
-  {"The number in " cite$ * " is missing." * warning$}
-  {patentnumber}
-		if$
-		}
-		
-%%版次%%%%
-FUNCTION {format.edition}
-{ edition empty$
+% 版本项格式
+FUNCTION {format.edition} { 
+  edition empty$
     { "" }
-    {edition}
+    { new.block			% 版本项按一个block输出
+      language empty$		% 英文文献版本号自动转换成数字形式的序数词
+	{ edition convert.edition
+	  "l" change.case$ " ed" * 
+	}
+	{ edition }		% 中文文献版本号直接输出
       if$
- }
+    }
+  if$
+}
 
 
 FUNCTION {format.url}
 { url empty$
     { "" }
-    { new.block " {\url{" url * "}}" * }
+    { new.block
+      "\url{" url * "}" * 
+    }
   if$
 }
-
-
-INTEGERS { multiresult }
 
 FUNCTION {multi.page.check}
 { 't :=
@@ -569,22 +1488,14 @@ FUNCTION {multi.page.check}
   while$
   multiresult
 }
-% 译者格式
-FUNCTION {format.translators}
-{ translator empty$
-   { "" }			% 无译者
-   { new.block			% 有译者
-      translator format.names "译" *
-    }
-  if$
-}
 
 FUNCTION {format.pages}
 { pages empty$
     { "" }
-    { pages multi.page.check
-    { "" pages n.dashify tie.or.space.connect }
-    { "" pages tie.or.space.connect }
+    { before.pages 'output.state :=
+      pages multi.page.check
+	{ "" pages n.dashify tie.or.space.connect }
+	{ "" pages tie.or.space.connect }
       if$
     }
   if$
@@ -596,17 +1507,33 @@ FUNCTION {format.vol.num.pages}
     'skip$
     { "(" number * ")" * *
       volume empty$
-    { "there's a number but no volume in " cite$ * warning$ }
-    'skip$
+	{ newsletter empty$
+	    { "there's a number but no volume in " cite$ * warning$ }
+	    'skip$
+	  if$
+	}
+	'skip$
       if$
     }
   if$
   pages empty$
     'skip$
     { duplicate$ empty$
-    { pop$ format.pages }
-    { ":" * pages n.dashify * }
+	{ pop$ format.pages }
+	{ bbl.colon * pages n.dashify * }
       if$
+    }
+  if$
+  % duplicate$ "top of stack = " swap$ * warning$
+  url empty$
+    'skip$
+    { refdate empty$ 
+	{ "there's an url but no refdate  in " cite$ * warning$ }
+	{ %duplicate$ "url and refdate is not empty, top of stack = " swap$ * warning$
+	  "~[" * refdate * "]" * 
+	}
+      if$
+      %duplicate$ "top of stack = " swap$ * warning$
     }
   if$
 }
@@ -627,35 +1554,54 @@ FUNCTION {format.chapter.pages}
   if$
 }
 
-FUNCTION {collection.in}
-{ lang empty$
-    { "In: " }
-    { "见: " }
-  if$
-}
-FUNCTION {collection.in.cn}
-{ lang empty$
-    { "In: " }
-    { "见: " booktitle *}
-  if$
-}
-
-FUNCTION {format.in.ed.booktitle}
+FUNCTION {format.in.booktitle}
 { booktitle empty$
     { "" }
     { editor empty$
-    { lang empty$
-        { collection.in "Proc of " * booktitle * }
-        { collection.in.cn "会议论文集" *}
+	{ language empty$
+	    { " " booktitle * }
+	    %        { "Proceedings of " booktitle * }
+            { " " booktitle * }
+	  if$
+	}
+	{ language empty$
+%            { "In: " format.editors * ", Proceedings of " * booktitle * }
+	    { " " booktitle * }
+            { " " booktitle * }
+	  if$
+	}
       if$
     }
-    { lang empty$
-        { collection.in format.editors * ". Proc of " * booktitle * }
-        { collection.in format.editors * ". " * booktitle * }
+  if$
+}
+
+FUNCTION {format.in.ed.booktitle.volume}
+{ booktitle empty$
+    { "" }
+    { editor empty$
+	{ language empty$
+%            { "Proceedings of " booktitle * }
+	    { " " booktitle * }
+            { " " booktitle * }
+	  if$
+	}
+	{ language empty$
+          %{ "In: " format.editors * ", Proceedings of " * booktitle * }
+	    { " " booktitle * }
+            { " " booktitle * }
+	  if$
+	}
       if$
-    }
+      %% volume
+      volume empty$
+	'skip$
+	{ language empty$
+	    { "Vol." * volume * }
+	    { "：第" * volume * "卷" * }
+	  if$
+	}
       if$
-    }
+    }  
   if$
 }
 
@@ -709,12 +1655,12 @@ FUNCTION {format.crossref.editor}
   #2 >
     { pop$ " et~al." * }
     { #2 <
-    'skip$
-    { editor #2 "{ll }{f{~}}" format.name$ "others" =
-        { " et~al." * }
-        { " and " * editor #2 "{ll }{f{~}}" format.name$ * }
-      if$
-    }
+	'skip$
+	{ editor #2 "{ll }{f{~}}" format.name$ "others" =
+            { " et~al." * }
+            { " and " * editor #2 "{ll }{f{~}}" format.name$ * }
+	  if$
+	}
       if$
     }
   if$
@@ -733,15 +1679,15 @@ FUNCTION {format.book.crossref}
   editor field.or.null author field.or.null =
   or
     { key empty$
-    { series empty$
-        { "need editor, key, or series for " cite$ * " to crossref " *
-          crossref * warning$
-          "" *
-        }
-        { "{\em " * series * "\/}" * }
-      if$
-    }
-    { key * }
+	{ series empty$
+            { "need editor, key, or series for " cite$ * " to crossref " *
+              crossref * warning$
+              "" *
+            }
+            { "{\em " * series * "\/}" * }
+	  if$
+	}
+	{ key * }
       if$
     }
     { format.crossref.editor * }
@@ -769,131 +1715,466 @@ FUNCTION {format.incoll.inproc.crossref}
   if$
   " \cite{" * crossref * "}" *
 }
-%%%%%出版地和出版者的格式设置%%%%%%%%%%%%%%
-FUNCTION {format.address.publisher}
-{ address empty$
-    { publisher empty$
-    { "" }
-    { "there's a publisher but no address in " cite$ * warning$
-      publisher
-    }
-      if$
-    }
-    { publisher empty$
-    'address
-    { address ": " * publisher * }
-      if$
-    }
-  if$
-}
-%%%%%地址和学校的格式设置%%%%%%%%%%%%%%
-FUNCTION {format.address.school}
-{ address empty$
-    { school empty$
-    { "" }
-    { "there's a school but no address in " cite$ * warning$
-      school
-    }
-      if$
-    }
-    { school empty$
-    'address
-    { address ": " * school * }
-      if$
-    }
-  if$
-}
 
-
-
-FUNCTION {format.title.type}
-{ title empty$
-    { type empty$
-        { "" }
-        { "there's a type but no title in " cite$ * warning$
-          type
-        }
+% 出版地: 出版者
+FUNCTION {format.address.publisher} {
+  new.block
+  type$ "inproceedings" =
+    { pubaddress empty$
+	{ "[" bbl.sine.loco * "]" * bbl.colon * % 无出版地
+	  publisher empty$
+	    { "there's neither pubaddress nor publisher in " cite$ * warning$
+	      "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { "there's a publisher but no pubaddress in " cite$ * warning$
+	      publisher *		% 有出版者
+	    }
+	  if$
+	}
+	{ pubaddress bbl.colon *	% 有出版地
+	  publisher empty$
+	    { "there's a pubaddress but no publisher in " cite$ * warning$
+	      "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { publisher * }		% 有出版者
+	  if$
+	}
       if$
     }
-    { type empty$
-        'title
-        { title ": " * type * }
+    { address empty$
+	{ "[" bbl.sine.loco * "]" * bbl.colon * % 无出版地
+	  publisher empty$
+	    { "there's neither address nor publisher in " cite$ * warning$
+	      "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { "there's a publisher but no address in " cite$ * warning$
+	      publisher *		% 有出版者
+	    }
+	  if$
+	}
+	{ address bbl.colon *	% 有出版地
+	  publisher empty$
+	    { "there's a address but no publisher in " cite$ * warning$
+	      "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { publisher * }		% 有出版者
+	  if$
+	}
       if$
     }
   if$
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%以下为参考文献中各类文献所需的条目内容（其中有output.check的表示不能为空）%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%出版物（为有确定出版社的书籍）%%
+% 出版地: 出版者, 出版年
+FUNCTION {format.address.publisher.year} { 
+%   % DEBUG
+%   "-- format.address.publisher.year(){" debug.output
+%   "--   address  =" address * debug.output
+%   "--   publisher=" publisher * debug.output
+%   "--   year     =" year * debug.output
+%   % END OF DEBUG
+  new.block
+  type$ "inproceedings" =
+    { pubaddress empty$
+	{ "" % "[" bbl.sine.loco * "]" * bbl.colon * % 无出版地
+	  publisher empty$
+	    { "there's neither pubaddress nor publisher in " cite$ * warning$
+	      "" * % "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { "there's a publisher but no pubaddress in " cite$ * warning$
+	      publisher *		% 有出版者
+	    }
+	  if$
+	}
+	{ publisher empty$
+	    { "there's a pubaddress but no publisher in " cite$ * warning$
+	      "" % "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { pubaddress bbl.colon *	% 有出版地
+	      publisher * }		% 有出版者
+	  if$
+	}
+      if$
+    }
+    { address empty$
+	{ "" % "[" bbl.sine.loco * "]" * bbl.colon * % 无出版地
+	  publisher empty$
+	    { "there's neither address nor publisher in " cite$ * warning$
+	      "" * % "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { "there's a publisher but no address in " cite$ * warning$
+	      publisher *		% 有出版者
+	    }
+	  if$
+	}
+	{ publisher empty$
+	    { "there's a address but no publisher in " cite$ * warning$
+	      "" % "[" * bbl.sine.nomine * "]" * % 无出版者
+	    }
+	    { address bbl.colon *	% 有出版地
+	      publisher * }		% 有出版者
+	  if$
+	}
+      if$
+    }
+  if$
+  
+  % 出版年
+  year empty$
+    { "there's no year in " cite$ * warning$ }
+    { type$ "inproceedings" =
+	{ bbl.comma * year * }
+	{ publisher empty$ 
+	    { year * }
+	    { bbl.comma * year * }
+	  if$
+	}
+      if$
+	
+      type$ "periodical" =
+	{ year2 empty$		% 对连续出版物可以排版 year2
+	    { skip$ }
+	    { "--" * 
+	      year2 "l" change.case$ "now" =
+		{ skip$ }
+		{ year2 * }
+	      if$
+	    }
+	  if$
+	}
+	{ skip$ }
+      if$
+    }
+  if$
+%   % DEBUG
+%   duplicate$ "-- }=" swap$ * debug.output
+%   % END OF DEBUG
+}
+
+% 出版地: 学校, 出版年
+FUNCTION {format.address.school.year} {   
+  new.block
+  address empty$
+    { "[" bbl.sine.loco * "]" * bbl.colon * % 无出版地
+      school empty$
+	{ "there's neither address nor school in " cite$ * warning$
+	  "[" bbl.sine.nomine * "]" * % 无出版者
+	}
+	{ "there's a school but no address in " cite$ * warning$
+	   school *		% 有出版者
+	}
+      if$
+    }
+    { address bbl.colon *	% 有出版地
+      school empty$
+	{ "there's a address but no school in " cite$ * warning$
+	  "[" bbl.sine.nomine * "]" * % 无出版者
+	}
+	{ school * }		% 有出版者
+      if$
+    }
+  if$
+  % 出版年
+  year empty$
+    { "there's no year in " cite$ * warning$ }
+    { bbl.comma * year * }
+  if$
+}
 
 
-FUNCTION {book}
-{ output.bibitem
+% FUNCTION {format.title.type}
+% { title empty$
+%     { type empty$
+%         { "" }
+%         { "there's a type but no title in " cite$ * warning$
+%           type
+%         }
+%       if$
+%     }
+%     { type empty$
+%         'title
+%         { title bbl.colon * type * }
+%       if$
+%     }
+%   if$
+% }
+
+FUNCTION {format.note} {
+  note empty$
+    { new.block "" }
+    { url empty$
+	{ new.block }
+	{ before.all 'output.state := }
+      if$
+      note }
+  if$
+}
+
+%%%%%%%%%%%%%%%%%
+%% 著录格式: 专著
+%%%%%%%%%%%%%%%%%
+
+% 普通图书
+FUNCTION {book} { 
+  start.entry			% 开始
+
+  author empty$			% 主要责任者
+    { format.editors "author and editor" output.warn }
+    { format.authors output.nonnull }
+  if$		
+  format.book.title "title"      output.warn	   % 题名项		
+  format.translators             output		   % 其他责任者(可选)
+  format.edition                 output		   % 版本项
+  format.address.publisher.year  output.nonnull	   %
+  format.reference.date          output		   % 
+  format.url                     output		   % 获取或访问路径
+  format.note                    output		   % 备注  
+
+  fin.entry
+}
+
+% 标准
+FUNCTION {standard} { 
+  start.entry
+  
+  organization empty$		% 主要责任人
+    { format.institution "organization and institution" output.warn }
+    { format.organization output.nonnull }
+  if$
+  format.book.title "title"     output.warn    % 题名项
+  format.translators            output	       % 其他责任人
+  format.edition                output	       % 版本项
+  format.address.publisher.year output.nonnull % 出版项
+  format.url                    output	       % URL
+  format.note                   output	       % 备注项
+
+  fin.entry
+}
+
+% 学位论文 
+FUNCTION {phdthesis} {
+  start.entry
+
+  format.authors "author"    output.warn
+  format.book.title "title"  output.warn
+  format.address.school.year output
+  format.note                output
+
+  fin.entry
+}
+
+% 会议录/论文集
+FUNCTION {proceedings} { 
+  start.entry
+  
+  editor empty$
+    { organization empty$
+	{ format.institution "author, organization institution" output.warn }
+	{ format.organization output.nonnull }
+      if$
+    }
+    { format.editors output.nonnull }
+  if$
+  format.book.title "title"     output.warn
+  format.address.publisher.year output
+  format.note                   output
+
+  fin.entry
+}
+
+% 科技报告
+FUNCTION {techreport} { 
+  start.entry
+  
   author empty$
-    { format.editors "author and editor" output.check }
-    { format.authors output.nonnull
-      crossref missing$
-    { "author and editor" editor either.or.check }
-    'skip$
+    { organization empty$
+	{ format.institution 
+	  "author, organization and institution" output.warn }
+	{ format.organization output.nonnull }
       if$
     }
+    { format.authors output.nonnull }
   if$
-  new.block
-  format.title "" * "title" output.check
-  format.translators output
-  crossref missing$
-    { format.bvolume output
-      new.block
-      format.number.series output
-      %new.sentence
-      %format.address.publisher output
-    }
-    { new.block
-      format.book.crossref output.nonnull
-    }
-  if$
-  format.edition output
-  new.block
-  format.address.publisher output
-  pages empty$
-    { format.date "year" output.check
-      % new.sentence
-      % format.pages output
-    }
-    { format.date ":" * format.pages * output }
-  if$
+  format.techreport.title "title" output.warn
+  format.address.publisher.year   output.nonnull
+  format.url                      output
+  format.note                     output
+
   fin.entry
 }
 
-%%期刊%%
-FUNCTION {article}
-{ output.bibitem
-  format.authors "author" output.check
-  new.block
-  format.title "" * "title" output.check
-  new.block
-  crossref missing$
-    { %journal emphasize "journal" output.check
-      journal "journal" output.check
-      %format.date "year" output.check
-      %new.block
-      year output
-      format.vol.num.pages output.year
-    }
-    { format.article.crossref output.nonnull
-      format.pages output
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 著录格式: 专著中析出的文献
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+FUNCTION {format.collection.editors} {
+  booktitle empty$
+    { "" }
+    { after.title 'output.state :=
+      format.editors }
+  if$
+}
+FUNCTION {format.address} {
+  booktitle empty$
+    { new.block }
+    { mid.sentence 'output.state := }
+  if$
+  address empty$
+    { "" }
+    { address }
+  if$
+}
+
+FUNCTION {format.month.year} {
+  month empty$
+    { "" }
+    { month " " * }
+  if$
+  year empty$
+    { "There is month but no year in " cite$ * warning$ }
+    { year * }
+  if$ 
+}
+
+FUNCTION {format.collection.title} {
+  booktitle empty$
+    { "" }
+    { new.block 
+      "In " booktitle *
+%       address empty$
+% 	{ skip$ }
+% 	{ bbl.comma * address * bbl.comma * 
+% 	  month empty$
+% 	    { skip$ }
+% 	    { month * }
+% 	  if$
+% 	  year empty$
+% 	    { skip$ }
+% 	    { " " * year * }
+% 	  if$
+% 	}
+%       if$
     }
   if$
-  new.block
-  format.note output
+}
+% 图书中析出的文献
+FUNCTION {inbook} { 
+  start.entry
+  
+  author empty$
+    { format.editors "author and editor" output.warn }
+    { format.authors output.nonnull }
+  if$
+  format.book.title "title"     output.warn
+  format.collection.editors "editor" output.warn
+  format.collection.title "booktitle" output.warn
+  format.translators            output	       % 其他责任人
+  format.edition                output	       % 版本项
+  format.address.publisher.year	output.nonnull % 出版项
+  format.pages "pages"          output.warn    %
+  format.url                    output	       % URL
+  format.note                   output	       % 备注项
+
   fin.entry
 }
-%%为印制的有封皮的作品，但没有出版社或赞助机构的名称（多见于会议的自制论文集）%%
+
+%%%%%%%%%%%%%%%%%
+%% 著录格式: 专利
+%%%%%%%%%%%%%%%%%
+FUNCTION {patent} {
+  start.entry
+  
+  author empty$
+    { format.assignees "assignee" output.warn }
+    { format.authors output.nonnull }
+  if$
+  format.patent.title "title" output.warn
+  format.patent.publication output 
+  format.url output
+  format.note output
+  
+  fin.entry
+}
+
+% 电子文献更新或修改日期
+FUNCTION {format.update.date} {
+  update empty$
+    { "" }
+    { output.state mid.sentence =
+	{ before.all 'output.state := }
+	{ skip$ }
+      if$
+      "~(" update * ")" * }
+  if$
+}
+
+%%%%%%%%%%%%%%%%%%%%%
+%% 著录格式: 电子文献
+%%%%%%%%%%%%%%%%%%%%%
+FUNCTION {electronic} {
+  start.entry
+  
+  author empty$
+    { organization "author and organization" output.warn }
+    { format.authors output.nonnull }
+  if$
+  format.book.title output
+  format.electronic.publication output
+  format.update.date output
+  format.reference.date output
+  format.url output
+  format.note output
+
+  fin.entry
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% 著录格式: 连续出版物
+%%%%%%%%%%%%%%%%%%%%%%%
+FUNCTION {periodical} { 
+  start.entry
+  
+  editor empty$
+    { format.organization "editors and organization" output.warn }
+    { format.editors output.nonnull }
+  if$
+  format.book.title "title" output.warn
+  format.year.volume.number output
+  format.address.publisher.year output
+  format.url output
+  format.note output
+
+  fin.entry
+}
+
+FUNCTION {format.journal.title} {
+  journal empty$
+    { "" }
+    { new.block journal }
+  if$
+}
+
+% 连续出版物中析出的文献
+FUNCTION {article}
+{ start.entry
+
+  format.authors "author" output.warn
+  format.book.title "title" output.warn
+  format.journal.title "journal" output.warn
+  format.year.volume.number output
+  format.pages "pages" output.warn
+  format.reference.date output
+  format.url output
+  format.note output
+  
+  fin.entry
+}
+
 FUNCTION {booklet}
-{ output.bibitem
+{ start.entry
   format.authors output
   new.block
-  format.title "" * "title" output.check
+  format.title "title" output.warn
   howpublished address new.block.checkb
   howpublished output
   address output
@@ -902,142 +2183,87 @@ FUNCTION {booklet}
   note output
   fin.entry
 }
-%%为一本书的一部分(章，节或某些页)（几乎不用该条目）%%
-FUNCTION {inbook}
-{ output.bibitem
-  author empty$
-    { format.editors "" * "author and editor" output.check }
-    { format.authors output.nonnull
-      crossref missing$
-    { "author and editor" editor either.or.check }
-    'skip$
-      if$
-    }
-  if$
-  new.block
-  format.btitle "title" output.check
-  crossref missing$
-    { format.bvolume output
-      %format.chapter.pages "chapter and pages" output.check
-      new.block
-      format.number.series output
-      new.sentence
-      publisher "publisher" output.check
-      address output
-    }
-    { format.chapter.pages "chapter and pages" output.check
-      new.block
-      format.book.crossref output.nonnull
-    }
-  if$
-  format.edition output
-  pages empty$
-    { format.date output }
-    { format.date ":" * format.pages * output }
-  if$
-  % format.date "." * format.pages * output
-  fin.entry
-}
 
-%%为一本书中有自己题目的一部分（几乎不用该条目）%%
 FUNCTION {incollection}
-{ output.bibitem
-  format.authors "author" output.check
+{ start.entry
+  format.authors "author" output.warn
   new.block
-  format.title "" * "title" output.check
+  format.ictitle "title" output.warn
   new.block
   crossref missing$
-    {
-    format.in.ed.booktitle "booktitle" output.check
+    { %format.in.ed.booktitle "booktitle" output.warn
       %format.bvolume output
+      format.in.ed.booktitle.volume "booktitle" output.warn
       format.number.series output
       format.chapter.pages output
       new.sentence
-      format.address.publisher output
-      %address output
-      %publisher "publisher" output.check
-      %format.edition output
-      % format.date "year" output.check
-      % format.date ". " * format.pages * output
+%      publisher "publisher" output.warn
+%      address output
+      format.address.publisher.year output
+      format.edition output
       format.date ":" * format.pages * output
+      %format.date "year" output.warn
     }
     { format.incoll.inproc.crossref output.nonnull
       format.chapter.pages output
     }
   if$
-  % new.block
-  % note output
+  new.block
+  note output
   fin.entry
 }
-%%为会议论文集中的一篇文章%%
-FUNCTION {inproceedings}
-{ output.bibitem
-  format.authors "author" output.check
-  new.block
-  format.title "." * "title" output.check
-  crossref missing$
-    {
-	  new.block
-	  format.in.ed.booktitle  "booktitle" output.check
-      format.bvolume output
-      %format.number.series output
-      %format.pages output
-	  new.block
-      address empty$
-    { organization publisher new.sentence.checkb
-      organization output
-      publisher output
-      %format.date "year" output.check
-      year output
-    }
-    { %address output.nonnull
-      format.address.publisher output
-      %format.date "year" output.check
-      year output
-      new.sentence
-      organization output
-      %publisher output
-    }
-      if$
-      format.pages output
+
+% 论文集中析出的文献
+FUNCTION {inproceedings} { 
+  start.entry
+
+  format.authors "author" output.warn
+  format.book.title "title"  output.warn
+  format.collection.editors "editor" output.warn
+  format.collection.title "booktitle" output.warn
+  format.address output
+  format.month.year output
+%  format.address.publisher.year	output.nonnull % 出版项
+  format.pages "pages"          output.warn    %
+  format.url                    output	       % URL
+  format.note                   output	       % 备注项 
+%   format.in.booktitle "booktitle" output.warn
+%       %format.bvolume output
+%       %format.number.series output
+%       %format.pages output
+%       address empty$
+% 	{ organization publisher new.sentence.checkb
+% 	  organization output
+% 	  publisher output
+% 	  %format.date "year" output.warn
+% 	  %year output
+% 	  format.date ":" * format.pages * output
+% 	}
+% 	{ %address output.nonnull
+% 	  format.address.publisher.year output  
+% 	  %format.date "year" output.warn
+% 	  % year output
+% 	  format.date ":" * format.pages * output
+% 	  new.sentence
+% 	  organization output
+% 	  %publisher output
+% 	}
+%       if$
+%       new.block
+      % pages output
       %remove.dots
-    }
-    { format.incoll.inproc.crossref output.nonnull
-      format.pages output
-    }
-  if$
-  new.block
-  format.note output
+    
+%     { format.incoll.inproc.crossref output.nonnull
+%       format.pages output
+%     }
+%   if$
+%   new.block
+%   note output  
   fin.entry
 }
 
-FUNCTION {cnproceedings}
-{ output.bibitem
-  format.authors "author" output.check
-  new.block
-  format.title "." * "title" output.check
-  new.block
-  format.in.ed.booktitle  "booktitle" output.check
-  new.block
-  format.address.publisher output
-  year output
-  new.sentence
-  organization output
-  new.block
-  format.pages output
-  %remove.dots
-  new.block
-  format.note output
-  fin.entry
-  %remove.dots
-}
-
-%%为会议论文集中的一篇文章%%
-FUNCTION {conference} { inproceedings }
-
-%%为科技文档%%
 FUNCTION {manual}
-{ output.bibitem
+{ start.entry
   author empty$
     { organization empty$
     'skip$
@@ -1049,7 +2275,7 @@ FUNCTION {manual}
     { format.authors output.nonnull }
   if$
   new.block
-  format.btitle "title" output.check
+  format.book.title "title" output.warn
   author empty$
     { organization empty$
     { address new.block.checka
@@ -1069,272 +2295,249 @@ FUNCTION {manual}
   note output
   fin.entry
 }
-%%硕士学位论文格式%%
-FUNCTION{format.masters}
-{
-lang empty$
-{"Thesis]"}
-{school "硕士学位论文]" *}
-if$
-}
-FUNCTION{format.masters.title}
-{title empty$
-{""}
-{title ":  [" * format.masters *}
-if$
-}
-FUNCTION {mastersthesis}
-{ output.bibitem
-  format.authors "author" add.period$ output.check
-  new.block
-  format.masters.title "" * "title" output.check
-  new.block
-  format.address.school output
-  %format.madd "address" output.check
-  %school "school" output.check
-  format.date "year" output.check
-  format.pages output
-  new.block
-  note output
-  fin.entry
-}
 
-%%博士学位论文%%
-FUNCTION{format.phd}
-{
-lang empty$
-{"Dissertation]"}
-{school "博士学位论文]" *}
-if$
-}
-FUNCTION{format.phd.title}
-{title empty$
-{""}
-{title ":  [" * format.phd *}
-if$
-}
+% FUNCTION {masterthesis.type}
+% { "~[D]" 
+% % language empty$
+% %     { "[Master Thesis]" }
+% %     { "[硕士学位论文]" }
+% %   if$
+% }
 
-FUNCTION {phdthesis}
-{ output.bibitem
-  format.authors "author" add.period$ output.check
-  new.block
-  %format.title remove.dots ": " * phdthesis.type * output
-  format.phd.title "" * "title" output.check
-  new.block
-  format.address.school output
-  %address output
-  %school "school" output.check
-  format.date "year" output.check
-  format.pages output
-  new.block
-  note output
-  fin.entry
-}
-%不属于其它任何类型的作品%
+% FUNCTION {mastersthesis}
+% { start.entry
+%   format.authors "author" add.period$ output.warn
+%   new.block
+%   format.title remove.dots " " * masterthesis.type * output
+%   new.block
+%   format.address.school output
+%   %address output
+%   %school "school" output.warn  
+%   format.date "year" output.warn
+%   new.block
+%   note output
+%   fin.entry
+% }
+
 FUNCTION {misc}
-{ output.bibitem
+{ start.entry
+
   format.authors output
-  title howpublished new.block.checkb
-  format.title "" * "title" output.check
-  howpublished new.block.checka
-  howpublished output
-  format.date output
+%  title howpublished new.block.checkb
+  format.title output
+%  howpublished new.block.checka
+%  howpublished output
+%  format.date output
+  format.address output
+  format.month.year output
+  format.pages "pages" output.warn
   format.url output
-  new.block
-  note output
-  fin.entry
-  empty.misc.check
-}
-
-%%会议论文集（几乎不用该条目）%%
-FUNCTION {proceedings}
-{ output.bibitem
-  editor empty$
-    { organization output }
-    { format.editors output.nonnull }
-  if$
-  new.block
-  format.btitle "" * "title" output.check
-  format.bvolume output
-  format.number.series output
-  address empty$
-    { editor empty$
-    { publisher new.sentence.checka }
-    { organization publisher new.sentence.checkb
-      organization output
-    }
-      if$
-      publisher output
-      format.date "year" output.check
-    }
-    { address output.nonnull
-      format.date "year" output.check
-      new.sentence
-      editor empty$
-    'skip$
-    { organization output }
-      if$
-      publisher output
-    }
-  if$
-  new.block
-  note output
-  fin.entry
-}
-%%技术报告%%
-FUNCTION {techreport}
-{ output.bibitem
-  format.authors "author" output.check
-  new.block
-  format.title "" * "title" output.check
-  new.block
-  format.tr.number output.nonnull
-  institution "institution" output.check
-  address output
-  date "year" output.check
-  format.url output
-  new.block
-  note output
-  fin.entry
-}
-%%%%%%%%%%%%%%%%%%%%%
-%% 著录格式: 电子文献
-%%%%%%%%%%%%%%%%%%%%%
-FUNCTION {electronic} {
- output.bibitem
-
- author empty$
-    { organization "author and organization" output.check }
-    { format.authors output.nonnull }
-  if$
-  format.title "" * "title" output.check
-  format.url output
-  date output.nonnull
-  note output
-
-  fin.entry
-}
-
-%%%%%%%%%%%%%%%%%%%%%
-%% 著录格式: 报刊杂志
-%%%%%%%%%%%%%%%%%%%%%
-FUNCTION {magazine} {
- output.bibitem
- format.authors "author" output.check
- new.block
- format.title "" * "title" output.check
- new.block
- publisher output
- date output
- note output
-
-  fin.entry
-}
-
-
-%%%%%%%%%%%%%%%%%
-%% 著录格式: 专利
-%%%%%%%%%%%%%%%%%
-FUNCTION {patent} {
-  output.bibitem
-  format.authors "author" output.check
-  new.block
-  format.title "" * "title" output.check
-  new.block
-  format.nationality "" * "nationality" output.check
-  new.block
-  format.patenttype "" * "patenttype" output.check
-  format.patentnumber "" * "patentnumber" output.check
-  new.block
-  date output
-  note output
+%  new.block
   format.note output
   fin.entry
+%  empty.misc.check
 }
 
+FUNCTION {phdthesis.type}
+{ "~[D]" 
+% language empty$
+%     { "[PhD Thesis]" }
+%     { "[博士学位论文]" }
+%   if$ 
+}
+
+
+
+
 FUNCTION {unpublished}
-{ output.bibitem
-  format.authors "author" output.check
+{ start.entry
+  format.authors "author" output.warn
   new.block
-  format.title "" * "title" output.check
+  format.title "title" output.warn
   new.block
-  note "note" output.check
+  note "note" output.warn
   format.date output
   fin.entry
 }
 
-FUNCTION {default.type} {article}
+% 专用控制条目 BUPTThesisBSTCTL 用于提供方便的用户设置接口
+FUNCTION {BUPTThesisBSTCTL}{
+  is.print.banners.to.terminal
+    { "** BUPTThesis BST control entry " quote$ * cite$ * 
+      quote$ * " detected." *
+      top$
+    }
+    { skip$ }
+  if$
+%   CTLuse_article_number
+%   empty$
+%     { skip$ }
+%     { CTLuse_article_number
+%       yes.no.to.int
+%       'is.use.number.for.article :=
+%     }
+%   if$
+%   CTLuse_paper
+%   empty$
+%     { skip$ }
+%     { CTLuse_paper
+%       yes.no.to.int
+%       'is.use.paper :=
+%     }
+%   if$
+%   CTLuse_forced_etal
+%   empty$
+%     { skip$ }
+%     { CTLuse_forced_etal
+%       yes.no.to.int
+%       'is.forced.et.al :=
+%     }
+%   if$
+  % 显示作者数目
+  CTLmax_names_forced_etal
+  empty$
+    { skip$ }
+    { CTLmax_names_forced_etal
+      string.to.integer
+      'max.num.names.before.forced.et.al :=
+    }
+  if$
+  % 论文作者英文姓名
+  CTLauthor_name_english
+  empty$
+    { skip$ }
+    { CTLauthor_name_english 
+      'author.name.in.english := 
+      % #1 'is.for.peer.review := 
+%      "CTLauthor_name_english=" author.name.in.english * debug.output
+    }
+  if$
+  % 论文作者中文姓名
+  CTLauthor_name_chinese
+  empty$
+    { skip$ }
+    { CTLauthor_name_chinese
+      'author.name.in.chinese := 
+      % #1 'is.for.peer.review :=
+%      "CTLauthor_name_chinese=" author.name.in.chinese * debug.output
+    }
+  if$
+  CTLfor_peer_review
+  empty$
+    { skip$ }
+    { CTLfor_peer_review
+      yes.no.to.int
+      'is.for.peer.review :=
+    }
+  if$
+%   CTLnames_show_etal
+%   empty$
+%     { skip$ }
+%     { CTLnames_show_etal
+%       string.to.integer
+%       'num.names.shown.with.forced.et.al :=
+%     }
+%   if$
+%   CTLuse_alt_spacing
+%   empty$
+%     { skip$ }
+%     { CTLuse_alt_spacing
+%       yes.no.to.int
+%       'is.use.alt.interword.spacing :=
+%     }
+%   if$
+%   CTLalt_stretch_factor
+%   empty$
+%     { skip$ }
+%     { CTLalt_stretch_factor
+%       'ALTinterwordstretchfactor :=
+%       "\renewcommand{\BIBentryALTinterwordstretchfactor}{"
+%       ALTinterwordstretchfactor * "}" *
+%       write$ newline$
+%     }
+%   if$
+%   CTLdash_repeated_names
+%   empty$
+%     { skip$ }
+%     { CTLdash_repeated_names
+%       yes.no.to.int
+%       'is.dash.repeated.names :=
+%     }
+%  if$
+%   CTLname_emph_author_en	% 强调显示的作者英文姓名
+%   empty$
+%     { skip$ }			% 若没有给出则跳过
+%     { CTLname_emph_author_en
+%       'name.emph.author.en :=	% 否则更新 name.emph.author.en
+%     }
+%   if$
+%   CTLname_emph_author_zh	% 强调显示的作者中文姓名
+%   empty$
+%     { skip$ }			% 若没有给出则跳过
+%     { CTLname_emph_author_zh
+%       'name.emph.author.zh :=	% 否则更新 name.emph.author.zh
+%     }
+%   if$
+  CTLname_format_string		% 英文姓名排版格式字符串
+  empty$
+    { skip$ }			% 若没有自定义则跳过
+    { CTLname_format_string	% 否则更新 name.format.string
+      'name.format.string :=
+    }
+  if$
+%   CTLname_latex_cmd
+%   empty$
+%     { skip$ }
+%     { CTLname_latex_cmd
+%       'name.latex.cmd :=
+%     }
+%   if$
+%   CTLname_url_prefix
+%   missing$
+%     { skip$ }
+%     { CTLname_url_prefix
+%       'name.url.prefix :=
+%     }
+%   if$
 
-MACRO {jan} {"January"}
 
-MACRO {feb} {"February"}
+%   num.names.shown.with.forced.et.al max.num.names.before.forced.et.al >
+%     { "CTLnames_show_etal cannot be greater than CTLmax_names_forced_etal in " cite$ * warning$ 
+%       max.num.names.before.forced.et.al 'num.names.shown.with.forced.et.al :=
+%     }
+%     { skip$ }
+%   if$
+}
 
-MACRO {mar} {"March"}
+%%%%%%%%%%%%
+%% 条目别名
+%%%%%%%%%%%%
+FUNCTION {mastersthesis} {phdthesis}
+FUNCTION {conference}    {inproceedings}
+FUNCTION {online}        {electronic}
+FUNCTION {internet}      {electronic}
+FUNCTION {webpage}       {electronic}
+FUNCTION {www}           {electronic}
+FUNCTION {default.type}  {misc}
 
-MACRO {apr} {"April"}
 
-MACRO {may} {"May"}
-
-MACRO {jun} {"June"}
-
-MACRO {jul} {"July"}
-
-MACRO {aug} {"August"}
-
-MACRO {sep} {"September"}
-
-MACRO {oct} {"October"}
-
-MACRO {nov} {"November"}
-
-MACRO {dec} {"December"}
+%%%%%%%%%%
+%% 主程序
+%%%%%%%%%%
 
 READ
 
-STRINGS { longest.label }
-
-INTEGERS { number.label longest.label.width }
-
-FUNCTION {initialize.longest.label}
-{ "" 'longest.label :=
-  #1 'number.label :=
-  #0 'longest.label.width :=
-}
-
-FUNCTION {longest.label.pass}
-{ number.label int.to.str$ 'label :=
-  number.label #1 + 'number.label :=
-  label width$ longest.label.width >
-    { label 'longest.label :=
-      label width$ 'longest.label.width :=
-    }
-    'skip$
-  if$
-}
-%%主程序%%
+EXECUTE {initialize.controls}	      % 初始化控制变量
+EXECUTE {initialize.status.constants} % 初始化状态常量
 EXECUTE {banner.message}	      % 显示初始提示信息
-EXECUTE {initialize.longest.label}
 
-ITERATE {longest.label.pass}
+EXECUTE {initialize.longest.label}    % 初始化最长的标号
+ITERATE {longest.label.pass}	      % 处理最长的标号
 
-FUNCTION {begin.bib}
-{ preamble$ empty$
-    'skip$
-    { preamble$ write$ newline$ }
-  if$
-  "\begin{thebibliography}{"  longest.label  * "}" * write$ newline$
-}
+EXECUTE {begin.bib}	              % 开始
+ITERATE {call.type$}		      %
+EXECUTE {end.bib}		      % 结束
 
-EXECUTE {begin.bib}
-
-EXECUTE {init.state.consts}
-
-ITERATE {call.type$}
-
-FUNCTION {end.bib}
-{ newline$
-  "\end{thebibliography}" write$ newline$
-}
-
-EXECUTE {end.bib}
 EXECUTE {completed.message}	      % 显示完成提示信息
+
+%% EOF
