@@ -22,7 +22,7 @@
 \newcommand\postchaptername{章}
 
 \punctstyle{hangmobanjiao}             % 调整中文字符的表示，行内占一个字符宽度，行尾占半个字符宽度
-
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}   %新定义minitab作为表格一部分
 % 调整罗列环境的布局
 \setitemize{leftmargin=3em,itemsep=0em,partopsep=0em,parsep=0em,topsep=-0em}
 \setenumerate{leftmargin=3em,itemsep=0em,partopsep=0em,parsep=0em,topsep=0em}
@@ -66,7 +66,7 @@
 \renewcommand{\contentsname}{目\qquad 录}
 \setcounter{tocdepth}{2} % 控制目录深度
 \titlecontents{chapter}[2em]{\vspace{.5\baselineskip}\xiaosi\song}
-             {\prechaptername\CJKnumber{\thecontentslabel}\postchaptername\qquad}{}
+             {\thecontentslabel\qquad}{}
              {\hspace{.5em}\titlerule*[10pt]{$\cdot$}\xiaosi\contentspage}
 \titlecontents{section}[3em]{\vspace{.25\baselineskip}\wuhao\song}
              {\thecontentslabel\quad}{}
@@ -203,8 +203,11 @@
 \def\cheading#1{\def\@cheading{#1}}\def\@cheading{}
 \def\xibie#1{\def\@xibie{#1}}\def\@xibie{}
 \def\nianji#1{\def\@nianji{#1}}\def\@nianji{}
-%\def\cheading#1{\def\@cheading{#1}}\def\@cheading{}
-\pagestyle{fancy}
+
+
+
+
+\pagestyle{fancy}     %使用fancy风格     定义奇数偶数页码
   \fancyhf{}
   \fancyhead[C]{\song\wuhao \@cheading}
   \fancyfoot[C]{\song\xiaowu ~\thepage~}
@@ -225,8 +228,8 @@
     \song\sihao{ \ \\}
 
     \song\yihao{海~~南~~大~~学\\}
-    \vspace{22pt}  
-    \hei\yihao{毕~~业~~论~~文~~(设计)\\}
+    \vspace{22pt}
+    \hei\yihao{课~~程~~设~~计~~(论文)\\}
     \vspace{112pt}  \vspace{60pt}
     \setlength{\@title@width}{8.1cm}
     {\sanhao\song{
@@ -249,32 +252,10 @@
 \end{titlepage}
 
 %%%%%%%%%%%%%%%%%%%   Abstract and Keywords  %%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
-\markboth{摘~要}{摘~要}
-\pdfbookmark[0]{摘~~要}{cabstract}
-%\addcontentsline{toc}{chapter}{摘~要}
-\chapter*{\centering\sanhao\song\bfseries 摘\qquad 要}
-\song\defaultfont
-\@cabstract
-\vspace{\baselineskip}
 
-\hangafter=1\hangindent=52.3pt\noindent
-{\hei\xiaosi 关键词：} \@ckeywords
-\thispagestyle{empty}
 
-%%%%%%%%%%%%%%%%%%%   English Abstract  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\clearpage
-%\phantomsection
-\markboth{ABSTRACT}{ABSTRACT}
-\pdfbookmark[0]{ABSTRACT}{eabstract}
-%\addcontentsline{toc}{chapter}{ABSTRACT}
-\chapter*{\centering\sanhao{\bf{ABSTRACT}}}
-%\vspace{\baselineskip}
-\@eabstract
-\vspace{\baselineskip}
 
-\hangafter=1\hangindent=60pt\noindent
-{\textbf{Keywords:}} \@ekeywords
-\thispagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%   English Abstract  %%%%%%%%%%%%%%%%%%%%%%%%%
 }
 \makeatother
