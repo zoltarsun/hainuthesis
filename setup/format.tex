@@ -253,7 +253,36 @@
 
 %%%%%%%%%%%%%%%%%%%   Abstract and Keywords  %%%%%%%%%%%%%%%%%%%%%%%
 
+\clearpage
 
+\pagestyle{fancy}
+  \fancyhf{}
+\fancyhead[CO]{\song\xiaowu \@cheading}
+\fancyhead[CE]{\song\xiaowu \@ctitle}
+\fancyfoot[C]{\song\xiaowu ~\thepage~}
+\makeatletter %双线页眉
+\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi%
+\hrule\@height 1.0pt \@width\headwidth\vskip1pt %上面线为1pt粗
+\hrule\@height 0.5pt\@width\headwidth  %下面0.5pt粗
+\vskip-2\headrulewidth\vskip-1pt}      %两条线的距离1pt
+\vspace{7mm}
+}     %双线与下面正文之间的垂直间距
+
+\fancypagestyle{plain}{% 设置开章页页眉页脚风格
+    \fancyhf{}%
+\fancyhead[CO]{\song\xiaowu \@cheading}
+\fancyhead[CE]{\song\xiaowu \@ctitle}
+\fancyfoot[C]{\song\xiaowu ~\thepage~} %首页页脚格式
+}
+\addcontentsline{toc}{chapter}{摘~~~~~~~~要}
+\chapter*{\centering\xiaoer\ 摘\qquad 要}
+\song\defaultfont
+\@cabstract
+\vspace{\baselineskip}
+
+\hangafter=1\hangindent=52.3pt\noindent   %如果取消该行注释，关键词换行时将会自动缩进
+\noindent
+{\hei\xiaosi 关键词： \@ckeywords}
 
 
 %%%%%%%%%%%%%%%%%%%   English Abstract  %%%%%%%%%%%%%%%%%%%%%%%%%
